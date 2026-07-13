@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saif Motion Studio — Learn Blender. Build Worlds.</title>
+<meta name="description" content="Saif Motion Studio is a Blender education platform teaching 3D modeling, sculpting, rigging, geometry nodes and motion graphics through project-based courses.">
+<meta name="theme-color" content="#131316">
+
+<!-- Favicon (inline SVG, no external asset needed) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23131316'/%3E%3Cpath d='M50 18 82 36 82 64 50 82 18 64 18 36Z' fill='none' stroke='%23EF7D28' stroke-width='4'/%3E%3Cpath d='M50 18 50 50 82 36 M50 50 82 64 M50 50 18 64' fill='none' stroke='%233D9DF2' stroke-width='2'/%3E%3C/svg%3E">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<!-- AOS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+
+<style>
+/* =========================================================
+   SAIF MOTION STUDIO — style.css
+   Design tokens, layout, and component styles for index.html
+   ========================================================= */
+
+:root{
+  /* ---- palette ---- */
+  --bg:            #131316;
+  --bg-elevated:   #1b1b20;
+  --surface:       #202027;
+  --surface-2:     #26262e;
+  --border:        rgba(255,255,255,.08);
+  --border-strong: rgba(255,255,255,.14);
+
+  --text:          #F2F1ED;
+  --text-muted:    #A8A7B3;
+  --text-faint:    #6F6E7A;
+
+  --orange:        #EF7D28;
+  --orange-soft:   rgba(239,125,40,.14);
+  --orange-2:      #F2A03D;
+  --blue:          #3D9DF2;
+  --blue-soft:     rgba(61,157,242,.14);
+
+  --grad-brand: linear-gradient(135deg, var(--orange) 0%, var(--orange-2) 100%);
+  --grad-wire:  linear-gradient(135deg, var(--orange) 0%, var(--blue) 100%);
+
+  --font-display: 'Sora', 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --shadow-soft: 0 20px 60px -20px rgba(0,0,0,.55);
+
+  --header-h: 76px;
+}
+
+[data-theme="light"]{
+  --bg:            #F5F4F1;
+  --bg-elevated:   #FFFFFF;
+  --surface:       #FFFFFF;
+  --surface-2:     #F0EFEB;
+  --border:        rgba(20,18,14,.08);
+  --border-strong: rgba(20,18,14,.14);
+  --text:          #1B1A18;
+  --text-muted:    #5C5A55;
+  --text-faint:    #8B8981;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  transition:background .4s ease, color .4s ease;
+}
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+ul{ list-style:none; margin:0; padding:0; }
+button{ font-family:inherit; cursor:pointer; }
+h1,h2,h3,h4{ font-family:var(--font-display); font-weight:700; margin:0 0 .5em; letter-spacing:-.02em; }
+p{ margin:0 0 1em; color:var(--text-muted); }
+.section-wrap{ max-width:1240px; margin:0 auto; padding:0 32px; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+}
+
+:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; border-radius:4px; }
+
+/* =========================== LOADING SCREEN =========================== */
+#loadingScreen{
+  position:fixed; inset:0; z-index:9999;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity .6s ease, visibility .6s ease;
+}
+#loadingScreen.is-hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+.loader-inner{ text-align:center; }
+.loader-mark{ margin-bottom:18px; animation:spin-slow 3.2s linear infinite; display:inline-block; }
+@keyframes spin-slow{ to{ transform:rotate(360deg); } }
+.loader-label{ font-family:var(--font-mono); font-size:11px; letter-spacing:.28em; color:var(--text-faint); margin-bottom:18px; }
+.loader-bar{ width:220px; height:3px; background:var(--surface-2); border-radius:2px; overflow:hidden; margin:0 auto 10px; }
+.loader-bar span{ display:block; height:100%; width:0%; background:var(--grad-brand); border-radius:2px; }
+.loader-meta{ display:flex; justify-content:space-between; width:220px; margin:0 auto; font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+
+/* =========================== CUSTOM CURSOR =========================== */
+.cursor-dot,.cursor-ring{ position:fixed; top:0; left:0; border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); }
+.cursor-dot{ width:5px; height:5px; background:var(--orange); }
+.cursor-ring{ width:32px; height:32px; border:1px solid rgba(239,125,40,.5); transition:width .2s, height .2s, border-color .2s, background .2s; }
+.cursor-ring.is-active{ width:52px; height:52px; background:rgba(239,125,40,.1); border-color:var(--orange); }
+@media (hover:none), (pointer:coarse){ .cursor-dot,.cursor-ring{ display:none; } }
+
+/* =========================== SCROLL PROGRESS =========================== */
+.scroll-progress{ position:fixed; top:0; left:0; width:100%; height:3px; z-index:1001; background:transparent; }
+.scroll-progress span{ display:block; height:100%; width:0%; background:var(--grad-brand); }
+
+/* =========================== TOASTS =========================== */
+.toast-stack{ position:fixed; bottom:26px; right:26px; z-index:9997; display:flex; flex-direction:column; gap:10px; }
+.toast{
+  background:var(--surface); border:1px solid var(--border-strong); border-left:3px solid var(--orange);
+  color:var(--text); padding:14px 18px; border-radius:var(--radius-sm); font-size:14px; min-width:260px;
+  box-shadow:var(--shadow-soft); display:flex; align-items:center; gap:10px;
+  animation:toast-in .35s ease;
+}
+.toast.is-leaving{ animation:toast-out .3s ease forwards; }
+@keyframes toast-in{ from{ opacity:0; transform:translateX(30px); } to{ opacity:1; transform:translateX(0); } }
+@keyframes toast-out{ to{ opacity:0; transform:translateX(30px); } }
+
+/* =========================== NAVBAR =========================== */
+.site-header{
+  position:fixed; top:0; left:0; width:100%; z-index:1000; height:var(--header-h);
+  display:flex; align-items:center;
+  background:rgba(19,19,22,.55);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  border-bottom:1px solid transparent;
+  transition:border-color .3s ease, background .3s ease, height .3s ease;
+}
+[data-theme="light"] .site-header{ background:rgba(245,244,241,.7); }
+.site-header.is-scrolled{ border-bottom-color:var(--border); height:64px; }
+.nav-wrap{ width:100%; max-width:1320px; margin:0 auto; padding:0 32px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+
+.brand{ display:flex; align-items:center; gap:10px; }
+.brand-mark{ display:flex; }
+.brand-text{ font-family:var(--font-display); font-weight:700; font-size:17px; letter-spacing:-.01em; }
+.brand-text em{ font-style:normal; color:var(--orange); }
+
+.main-nav ul{ display:flex; align-items:center; gap:28px; }
+.main-nav a{ font-size:14.5px; color:var(--text-muted); position:relative; padding:6px 0; transition:color .2s; }
+.main-nav a:hover, .main-nav a.active{ color:var(--text); }
+.main-nav a.active::after{ content:''; position:absolute; left:0; right:0; bottom:-2px; height:2px; background:var(--grad-brand); border-radius:2px; }
+
+.nav-actions{ display:flex; align-items:center; gap:10px; }
+.icon-btn{
+  width:38px; height:38px; border-radius:50%; border:1px solid var(--border); background:transparent; color:var(--text);
+  display:flex; align-items:center; justify-content:center; font-size:14px; transition:.2s;
+}
+.icon-btn:hover{ border-color:var(--orange); color:var(--orange); background:var(--orange-soft); }
+.nav-cta{ margin-left:4px; white-space:nowrap; }
+
+.nav-burger{ display:none; flex-direction:column; gap:4px; border-radius:10px; }
+.nav-burger span{ width:16px; height:2px; background:var(--text); border-radius:2px; transition:.25s; }
+
+/* =========================== BUTTONS =========================== */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  padding:13px 26px; border-radius:100px; font-weight:600; font-size:14.5px;
+  border:1px solid transparent; transition:transform .2s ease, box-shadow .2s ease, background .2s, color .2s, border-color .2s;
+  white-space:nowrap;
+}
+.btn i{ font-size:12px; }
+.btn-primary{ background:var(--grad-brand); color:#161311; box-shadow:0 12px 28px -10px rgba(239,125,40,.55); }
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 16px 34px -10px rgba(239,125,40,.7); }
+.btn-sm{ padding:9px 18px; font-size:13.5px; }
+.btn-ghost{ background:var(--surface); color:var(--text); border-color:var(--border-strong); }
+.btn-ghost:hover{ border-color:var(--orange); color:var(--orange); }
+.btn-outline{ background:transparent; color:var(--text); border-color:var(--border-strong); }
+.btn-outline:hover{ border-color:var(--orange); color:var(--orange); transform:translateX(2px); }
+.play-ring{ width:22px; height:22px; border-radius:50%; background:var(--orange-soft); display:flex; align-items:center; justify-content:center; font-size:9px; color:var(--orange); }
+
+/* =========================== SEARCH OVERLAY =========================== */
+.search-overlay{
+  position:fixed; inset:0; z-index:1100; background:rgba(10,10,12,.86); backdrop-filter:blur(10px);
+  display:flex; flex-direction:column; align-items:center; padding-top:14vh;
+  opacity:0; visibility:hidden; transition:opacity .3s ease, visibility .3s ease;
+}
+.search-overlay.is-open{ opacity:1; visibility:visible; }
+.search-box{
+  width:min(640px,88vw); display:flex; align-items:center; gap:14px; background:var(--surface);
+  border:1px solid var(--border-strong); border-radius:var(--radius-md); padding:16px 20px; box-shadow:var(--shadow-soft);
+}
+.search-box i{ color:var(--orange); }
+.search-box input{ flex:1; background:transparent; border:none; outline:none; color:var(--text); font-size:16px; font-family:var(--font-body); }
+.search-box input::placeholder{ color:var(--text-faint); }
+.search-box button{ background:transparent; border:none; color:var(--text-muted); font-size:16px; }
+.search-suggestions{ width:min(640px,88vw); margin-top:10px; }
+.search-suggestions li{ padding:12px 20px; color:var(--text-muted); font-size:14px; border-radius:var(--radius-sm); cursor:pointer; }
+.search-suggestions li:hover, .search-suggestions li.is-active{ background:var(--surface); color:var(--text); }
+.search-suggestions li b{ color:var(--orange); font-weight:600; }
+
+/* =========================== HERO =========================== */
+.hero{ position:relative; padding:calc(var(--header-h) + 64px) 0 0; overflow:hidden; }
+#nodeCanvas{ position:absolute; inset:0; width:100%; height:100%; opacity:.55; pointer-events:none; }
+.hero-wrap{
+  position:relative; z-index:2; max-width:1240px; margin:0 auto; padding:0 32px;
+  display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;
+}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:12px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--orange-2); margin-bottom:18px;
+}
+.eyebrow-dot{ width:6px; height:6px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px var(--orange-soft); }
+
+.hero-copy h1{ font-size:clamp(38px,5vw,60px); line-height:1.06; color:var(--text); }
+.rotator-wrap{ display:inline-block; position:relative; }
+.rotator-text{
+  background:var(--grad-brand); -webkit-background-clip:text; background-clip:text; color:transparent;
+  border-bottom:3px solid var(--orange); padding-bottom:2px;
+}
+.hero-sub{ font-size:17px; max-width:520px; margin-top:20px; }
+.hero-actions{ display:flex; gap:14px; margin-top:30px; flex-wrap:wrap; }
+
+.hero-status-bar{
+  display:flex; align-items:center; gap:20px; margin-top:52px; padding:18px 22px; border-radius:var(--radius-md);
+  background:var(--surface); border:1px solid var(--border); font-family:var(--font-mono); width:fit-content; max-width:100%;
+}
+.status-item{ display:flex; flex-direction:column; gap:2px; }
+.status-num{ font-size:19px; font-weight:600; color:var(--text); }
+.status-label{ font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em; }
+.status-sep{ width:1px; height:26px; background:var(--border-strong); }
+
+/* ---- hero viewport mock ---- */
+.hero-viewport{ position:relative; }
+.viewport-frame{
+  background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:var(--radius-lg);
+  overflow:hidden; box-shadow:var(--shadow-soft);
+}
+.viewport-topbar{ display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--border); }
+.vp-dot{ width:9px; height:9px; border-radius:50%; }
+.vp-dot--red{ background:#E5555F; } .vp-dot--y{ background:#E8B84B; } .vp-dot--g{ background:#4FC77E; }
+.vp-title{ margin-left:8px; font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); }
+.vp-tag{ margin-left:auto; font-family:var(--font-mono); font-size:10.5px; color:var(--orange-2); background:var(--orange-soft); padding:3px 9px; border-radius:100px; }
+
+.viewport-stage{ position:relative; height:340px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.viewport-grid{
+  position:absolute; inset:0;
+  background-image:linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:34px 34px; mask-image:radial-gradient(circle at 50% 50%, black 40%, transparent 78%);
+}
+.wire-scene{ perspective:900px; }
+.wire-shape{
+  width:150px; height:150px; position:relative; transform-style:preserve-3d;
+  animation:rotate3d 14s linear infinite;
+  border:1.5px solid var(--orange);
+}
+.wire-shape::before,.wire-shape::after{
+  content:''; position:absolute; inset:0; border:1.5px solid var(--blue);
+}
+.wire-shape::before{ transform:rotateY(60deg); }
+.wire-shape::after{ transform:rotateY(120deg); }
+@keyframes rotate3d{ from{ transform:rotateX(-18deg) rotateY(0deg); } to{ transform:rotateX(-18deg) rotateY(360deg); } }
+.viewport-hud{ position:absolute; bottom:12px; left:14px; display:flex; gap:14px; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); }
+.viewport-hud b{ color:var(--text-muted); }
+
+.viewport-timeline{ padding:14px 16px 16px; border-top:1px solid var(--border); }
+.tl-track{ height:4px; background:var(--surface-2); border-radius:2px; position:relative; margin-bottom:10px; }
+.tl-playhead{ position:absolute; left:34%; top:50%; transform:translate(-50%,-50%); width:12px; height:12px; border-radius:50%; background:var(--orange); box-shadow:0 0 0 4px var(--orange-soft); }
+.tl-track::before{ content:''; position:absolute; left:0; top:0; bottom:0; width:34%; background:var(--grad-brand); border-radius:2px; }
+.tl-meta{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+
+.floating-chip{
+  position:absolute; display:flex; align-items:center; gap:8px; padding:10px 16px; border-radius:100px;
+  background:var(--surface); border:1px solid var(--border-strong); font-size:12.5px; font-weight:500; box-shadow:var(--shadow-soft);
+  animation:float 5s ease-in-out infinite;
+}
+.floating-chip i{ color:var(--orange); }
+.chip-1{ top:-18px; right:24px; animation-delay:.3s; }
+.chip-2{ bottom:34px; left:-22px; animation-delay:1s; }
+@keyframes float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-10px); } }
+
+/* ---- marquee ---- */
+.hero-marquee{ margin-top:76px; border-top:1px solid var(--border); border-bottom:1px solid var(--border); overflow:hidden; padding:18px 0; }
+.marquee-track{ display:flex; gap:44px; width:max-content; animation:marquee 32s linear infinite; }
+.marquee-track span{ font-family:var(--font-mono); font-size:12.5px; letter-spacing:.14em; color:var(--text-faint); white-space:nowrap; }
+@keyframes marquee{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+
+/* =========================== SECTIONS (shared) =========================== */
+.section{ padding:110px 0; }
+.section-alt{ background:var(--bg-elevated); }
+.section-head{ max-width:640px; margin-bottom:52px; }
+.section-head h2{ font-size:clamp(28px,3.4vw,40px); }
+.section-desc{ font-size:15.5px; }
+.section-cta{ margin-top:44px; text-align:center; }
+
+/* =========================== COURSE CARDS =========================== */
+.course-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+.course-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden;
+  transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease; display:flex; flex-direction:column;
+}
+.course-card:hover{ transform:translateY(-6px); border-color:var(--border-strong); box-shadow:var(--shadow-soft); }
+.course-thumb{
+  height:150px; position:relative; display:flex; align-items:center; justify-content:center;
+  background:
+    linear-gradient(160deg, rgba(239,125,40,.22), rgba(61,157,242,.14)),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 2px, transparent 2px 14px);
+  border-bottom:1px solid var(--border);
+}
+.course-thumb i{ font-size:30px; color:var(--text); opacity:.85; }
+.course-level{ position:absolute; top:12px; left:12px; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em; padding:4px 10px; border-radius:100px; background:rgba(0,0,0,.4); color:#fff; backdrop-filter:blur(4px); }
+.course-body{ padding:22px 22px 24px; display:flex; flex-direction:column; gap:12px; flex:1; }
+.course-cat{ font-family:var(--font-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--orange-2); }
+.course-body h3{ font-size:18px; margin-bottom:0; }
+.course-body p{ font-size:13.5px; margin-bottom:0; }
+.course-meta{ display:flex; gap:16px; font-size:12.5px; color:var(--text-faint); font-family:var(--font-mono); }
+.course-progress-row{ display:flex; align-items:center; gap:10px; margin-top:2px; }
+.course-progress-track{ flex:1; height:5px; border-radius:3px; background:var(--surface-2); overflow:hidden; }
+.course-progress-fill{ height:100%; background:var(--grad-brand); border-radius:3px; }
+.course-progress-pct{ font-family:var(--font-mono); font-size:11.5px; color:var(--text-faint); }
+.course-actions{ display:flex; gap:8px; margin-top:10px; }
+.course-actions .btn{ flex:1; padding:10px 14px; font-size:13px; }
+.course-actions .icon-btn{ width:40px; height:40px; }
+
+/* =========================== VIDEO CARDS =========================== */
+.video-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+.video-card{ cursor:pointer; }
+.video-thumb{
+  position:relative; height:190px; border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border);
+  background:linear-gradient(150deg, #1c1c22, #232329);
+  display:flex; align-items:center; justify-content:center;
+}
+.video-thumb .wire-shape{ width:70px; height:70px; opacity:.7; animation-duration:9s; }
+.video-play{
+  position:absolute; width:52px; height:52px; border-radius:50%; background:rgba(19,19,22,.7); border:1px solid var(--border-strong);
+  display:flex; align-items:center; justify-content:center; color:var(--text); font-size:15px; backdrop-filter:blur(4px);
+  transition:.25s;
+}
+.video-card:hover .video-play{ background:var(--orange); color:#161311; transform:scale(1.08); }
+.video-duration{ position:absolute; bottom:10px; right:10px; font-family:var(--font-mono); font-size:11px; background:rgba(0,0,0,.55); padding:3px 8px; border-radius:5px; }
+.video-info{ padding-top:14px; }
+.video-info h3{ font-size:15.5px; margin-bottom:6px; }
+.video-info-meta{ font-size:12.5px; color:var(--text-faint); font-family:var(--font-mono); }
+
+/* =========================== ROADMAP PREVIEW =========================== */
+.roadmap-track{ position:relative; display:grid; grid-template-columns:repeat(4,1fr); gap:20px; padding-top:22px; }
+.roadmap-line{ position:absolute; top:6px; left:0; right:0; height:2px; background:var(--border-strong); }
+.roadmap-line-fill{ display:block; height:100%; background:var(--grad-brand); }
+.roadmap-node{ display:flex; flex-direction:column; gap:8px; }
+.rn-dot{
+  width:14px; height:14px; border-radius:50%; background:var(--surface); border:2px solid var(--border-strong);
+  display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:9px; color:var(--text-faint);
+  margin-bottom:6px;
+}
+.roadmap-node.is-done .rn-dot{ background:var(--orange); border-color:var(--orange); color:#161311; }
+.roadmap-node.is-current .rn-dot{ border-color:var(--orange); color:var(--orange); box-shadow:0 0 0 5px var(--orange-soft); }
+.rn-label{ font-weight:600; font-size:15px; }
+.rn-sub{ font-size:12.5px; color:var(--text-faint); }
+
+/* =========================== STATS BAND =========================== */
+.stats-band{ padding:90px 0; background:var(--bg-elevated); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+.stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px; text-align:center; }
+.stat-card{ display:flex; flex-direction:column; gap:6px; }
+.stat-num{ font-family:var(--font-display); font-size:clamp(32px,4vw,46px); font-weight:800; background:var(--grad-brand); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.stat-label{ color:var(--text-faint); font-size:13.5px; }
+
+/* =========================== TESTIMONIALS =========================== */
+.testi-carousel{ display:flex; align-items:center; gap:18px; }
+.testi-track{ flex:1; overflow:hidden; }
+.testi-slide-row{ display:flex; transition:transform .5s ease; }
+.testi-card{
+  min-width:100%; display:grid; grid-template-columns:auto 1fr; gap:20px; padding:34px; background:var(--surface);
+  border:1px solid var(--border); border-radius:var(--radius-lg); align-items:flex-start;
+}
+.testi-avatar{
+  width:56px; height:56px; border-radius:50%; background:var(--grad-brand); color:#161311; font-family:var(--font-display);
+  font-weight:700; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
+}
+.testi-stars{ color:var(--orange); font-size:13px; margin-bottom:10px; }
+.testi-quote{ font-size:15.5px; color:var(--text); margin-bottom:14px; }
+.testi-name{ font-weight:600; font-size:14px; }
+.testi-role{ font-size:12.5px; color:var(--text-faint); font-family:var(--font-mono); }
+.testi-arrow{
+  width:44px; height:44px; border-radius:50%; background:var(--surface); border:1px solid var(--border-strong); color:var(--text);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:.2s;
+}
+.testi-arrow:hover{ border-color:var(--orange); color:var(--orange); }
+.testi-dots{ display:flex; justify-content:center; gap:8px; margin-top:26px; }
+.testi-dots span{ width:7px; height:7px; border-radius:50%; background:var(--border-strong); cursor:pointer; transition:.2s; }
+.testi-dots span.is-active{ background:var(--orange); width:20px; border-radius:4px; }
+
+/* =========================== NEWSLETTER =========================== */
+.newsletter-band{ padding:80px 0; }
+.newsletter-inner{
+  display:flex; align-items:center; justify-content:space-between; gap:40px; flex-wrap:wrap;
+  background:var(--grad-wire); border-radius:var(--radius-lg); padding:52px 56px; position:relative; overflow:hidden;
+}
+.newsletter-inner::before{ content:''; position:absolute; inset:0; background:rgba(19,19,22,.86); }
+.newsletter-inner > *{ position:relative; z-index:1; }
+.newsletter-inner h2{ color:#fff; font-size:26px; max-width:360px; }
+.newsletter-inner p{ color:rgba(255,255,255,.7); max-width:360px; margin-bottom:0; }
+.newsletter-form{ display:flex; gap:10px; flex-wrap:wrap; }
+.nf-field{ display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.16); border-radius:100px; padding:13px 20px; min-width:260px; }
+.nf-field i{ color:var(--orange-2); }
+.nf-field input{ background:transparent; border:none; outline:none; color:#fff; font-size:14px; flex:1; font-family:var(--font-body); }
+.nf-field input::placeholder{ color:rgba(255,255,255,.45); }
+
+/* =========================== FOOTER =========================== */
+.site-footer{ padding:80px 0 0; border-top:1px solid var(--border); }
+.footer-grid{ display:grid; grid-template-columns:1.6fr 1fr 1fr 1fr 1fr; gap:40px; padding-bottom:56px; }
+.footer-brand p{ font-size:13.5px; margin:16px 0 18px; max-width:280px; }
+.footer-social{ display:flex; gap:10px; }
+.footer-social a{ width:36px; height:36px; border-radius:50%; border:1px solid var(--border-strong); display:flex; align-items:center; justify-content:center; font-size:14px; transition:.2s; }
+.footer-social a:hover{ border-color:var(--orange); color:var(--orange); background:var(--orange-soft); }
+.footer-col h4{ font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:16px; }
+.footer-col ul{ display:flex; flex-direction:column; gap:11px; }
+.footer-col ul li a{ font-size:14px; color:var(--text-muted); transition:.2s; }
+.footer-col ul li a:hover{ color:var(--orange); }
+.footer-contact p{ font-size:13.5px; display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.footer-bottom{ border-top:1px solid var(--border); padding:22px 32px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:12.5px; color:var(--text-faint); max-width:1240px; margin:0 auto; }
+
+/* =========================== FAB / BACK TO TOP =========================== */
+.fab-top{
+  position:fixed; bottom:26px; left:26px; width:46px; height:46px; border-radius:50%; z-index:900;
+  background:var(--surface); border:1px solid var(--border-strong); color:var(--text);
+  display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow-soft);
+  opacity:0; visibility:hidden; transform:translateY(10px); transition:.3s ease;
+}
+.fab-top.is-visible{ opacity:1; visibility:visible; transform:translateY(0); }
+.fab-top:hover{ border-color:var(--orange); color:var(--orange); }
+
+/* =========================== MODAL =========================== */
+.modal-backdrop{
+  position:fixed; inset:0; z-index:1200; background:rgba(8,8,10,.78); backdrop-filter:blur(8px);
+  display:flex; align-items:center; justify-content:center; padding:24px;
+  opacity:0; visibility:hidden; transition:.3s ease;
+}
+.modal-backdrop.is-open{ opacity:1; visibility:visible; }
+.modal-box{ width:min(760px,100%); background:var(--bg-elevated); border:1px solid var(--border-strong); border-radius:var(--radius-lg); overflow:hidden; position:relative; transform:scale(.94); transition:.3s ease; }
+.modal-backdrop.is-open .modal-box{ transform:scale(1); }
+.modal-close{ position:absolute; top:14px; right:14px; z-index:2; width:36px; height:36px; border-radius:50%; background:rgba(0,0,0,.4); border:none; color:#fff; }
+.modal-video-stage{ height:340px; background:linear-gradient(160deg,#1b1b20,#232329); display:flex; align-items:center; justify-content:center; position:relative; }
+.wire-scene--modal{ perspective:1000px; }
+.wire-shape--modal{ width:130px; height:130px; }
+.modal-video-tag{ position:absolute; bottom:14px; left:16px; font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+.modal-video-info{ padding:22px 26px 26px; }
+.modal-video-info h3{ font-size:17px; }
+.modal-video-info p{ font-size:13.5px; margin-bottom:0; }
+
+/* =========================== RESPONSIVE =========================== */
+@media (max-width:1080px){
+  .hero-wrap{ grid-template-columns:1fr; }
+  .hero-viewport{ max-width:520px; }
+  .course-grid, .video-grid{ grid-template-columns:repeat(2,1fr); }
+  .footer-grid{ grid-template-columns:1fr 1fr 1fr; }
+  .roadmap-track{ grid-template-columns:repeat(2,1fr); row-gap:32px; }
+  .roadmap-line{ display:none; }
+}
+@media (max-width:860px){
+  .main-nav{ position:fixed; top:var(--header-h); left:0; width:100%; height:0; overflow:hidden; background:var(--bg-elevated); border-bottom:1px solid var(--border); transition:height .3s ease; }
+  .main-nav.is-open{ height:calc(100vh - var(--header-h)); overflow-y:auto; }
+  .main-nav ul{ flex-direction:column; align-items:flex-start; gap:0; padding:12px 32px 32px; }
+  .main-nav ul li{ width:100%; border-bottom:1px solid var(--border); }
+  .main-nav a{ display:block; padding:16px 0; }
+  .nav-burger{ display:flex; }
+  .nav-cta{ display:none; }
+  .stats-grid{ grid-template-columns:repeat(2,1fr); gap:32px; }
+}
+@media (max-width:640px){
+  .section{ padding:76px 0; }
+  .section-wrap{ padding:0 20px; }
+  .nav-wrap{ padding:0 20px; }
+  .course-grid, .video-grid{ grid-template-columns:1fr; }
+  .footer-grid{ grid-template-columns:1fr 1fr; }
+  .newsletter-inner{ padding:36px 26px; }
+  .testi-card{ grid-template-columns:1fr; padding:24px; }
+  .roadmap-track{ grid-template-columns:1fr; }
+  .hero{ padding-top:calc(var(--header-h) + 40px); }
+  .hero-status-bar{ flex-wrap:wrap; gap:14px 20px; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ================= LOADING SCREEN ================= -->
+<div id="loadingScreen" aria-hidden="true">
+  <div class="loader-inner">
+    <div class="loader-mark">
+      <svg viewBox="0 0 100 100" width="56" height="56">
+        <polygon points="50,10 88,32 88,68 50,90 12,68 12,32" fill="none" stroke="#EF7D28" stroke-width="3"/>
+        <polyline points="50,10 50,50 88,32" fill="none" stroke="#3D9DF2" stroke-width="1.6"/>
+        <polyline points="50,50 88,68" fill="none" stroke="#3D9DF2" stroke-width="1.6"/>
+        <polyline points="50,50 12,68" fill="none" stroke="#3D9DF2" stroke-width="1.6"/>
+      </svg>
+    </div>
+    <div class="loader-label">SAIF MOTION STUDIO</div>
+    <div class="loader-bar"><span id="loaderProgress"></span></div>
+    <div class="loader-meta"><span id="loaderPercent">0%</span><span>compiling scene…</span></div>
+  </div>
+</div>
+
+<!-- ================= CUSTOM CURSOR ================= -->
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+<!-- ================= SCROLL PROGRESS ================= -->
+<div class="scroll-progress" aria-hidden="true"><span id="scrollProgressBar"></span></div>
+
+<!-- ================= TOASTS ================= -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<!-- ================= NAVBAR ================= -->
+<header class="site-header" id="siteHeader">
+  <div class="nav-wrap">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 100 100" width="30" height="30">
+          <polygon points="50,10 88,32 88,68 50,90 12,68 12,32" fill="none" stroke="#EF7D28" stroke-width="5"/>
+        </svg>
+      </span>
+      <span class="brand-text">Saif Motion<em>Studio</em></span>
+    </a>
+
+    <nav class="main-nav" id="mainNav" aria-label="Primary">
+      <ul>
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="courses.html">Blender Course</a></li>
+        <li><a href="challenge.html">30-Day Challenge</a></li>
+        <li><a href="assets.html">Free Assets</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="community.html">Community</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="searchToggle" aria-label="Open search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle light and dark theme"><i class="fa-solid fa-moon"></i></button>
+      <a href="courses.html" class="btn btn-primary btn-sm nav-cta">Start Learning</a>
+      <button class="icon-btn nav-burger" id="navBurger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= SEARCH OVERLAY ================= -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" id="globalSearchInput" placeholder="Search courses, assets, lessons…" autocomplete="off">
+    <button id="searchClose" aria-label="Close search"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <ul class="search-suggestions" id="searchSuggestions"></ul>
+</div>
+
+<main id="mainContent">
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="hero">
+  <canvas id="nodeCanvas" aria-hidden="true"></canvas>
+  <div class="hero-wrap">
+    <div class="hero-copy">
+      <p class="eyebrow" data-aos="fade-up">
+        <span class="eyebrow-dot"></span> Blender Education Studio
+      </p>
+      <h1 data-aos="fade-up" data-aos-delay="80">
+        Learn to build
+        <span class="rotator-wrap"><span id="rotatorText" class="rotator-text">worlds</span></span>
+        <br> inside Blender.
+      </h1>
+      <p class="hero-sub" data-aos="fade-up" data-aos-delay="160">
+        Project-based courses in modeling, sculpting, rigging, geometry nodes and motion graphics —
+        taught the way working 3D artists actually work, one render at a time.
+      </p>
+      <div class="hero-actions" data-aos="fade-up" data-aos-delay="240">
+        <a href="courses.html" class="btn btn-primary">
+          <i class="fa-solid fa-play"></i> Start Free Course
+        </a>
+        <button class="btn btn-ghost" id="watchShowreelBtn">
+          <span class="play-ring"><i class="fa-solid fa-play"></i></span> Watch Showreel
+        </button>
+      </div>
+
+      <div class="hero-status-bar" data-aos="fade-up" data-aos-delay="320">
+        <div class="status-item"><span class="status-num" data-count="128000">0</span><span class="status-label">students</span></div>
+        <div class="status-sep"></div>
+        <div class="status-item"><span class="status-num" data-count="64">0</span><span class="status-label">courses</span></div>
+        <div class="status-sep"></div>
+        <div class="status-item"><span class="status-num" data-count="4.9" data-decimal="1">0</span><span class="status-label">avg. rating</span></div>
+        <div class="status-sep"></div>
+        <div class="status-item"><span class="status-num" data-count="42">0</span><span class="status-label">countries</span></div>
+      </div>
+    </div>
+
+    <div class="hero-viewport" data-aos="fade-left" data-aos-delay="200">
+      <div class="viewport-frame">
+        <div class="viewport-topbar">
+          <span class="vp-dot vp-dot--red"></span><span class="vp-dot vp-dot--y"></span><span class="vp-dot vp-dot--g"></span>
+          <span class="vp-title">viewport_shading.001</span>
+          <span class="vp-tag">EEVEE · 4K</span>
+        </div>
+        <div class="viewport-stage">
+          <div class="wire-scene">
+            <div class="wire-shape" id="wireShape"></div>
+          </div>
+          <div class="viewport-grid"></div>
+          <div class="viewport-hud">
+            <span>Samples <b>128/128</b></span>
+            <span>Mem <b>1.2 GB</b></span>
+          </div>
+        </div>
+        <div class="viewport-timeline">
+          <div class="tl-track"><div class="tl-playhead"></div></div>
+          <div class="tl-meta"><span>00:00:12:04</span><span>Frame 288 / 720</span></div>
+        </div>
+      </div>
+      <div class="floating-chip chip-1"><i class="fa-solid fa-diagram-project"></i> Geometry Nodes</div>
+      <div class="floating-chip chip-2"><i class="fa-solid fa-cube"></i> Sculpt Ready</div>
+    </div>
+  </div>
+
+  <div class="hero-marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>MODELING</span><span>SCULPTING</span><span>RIGGING</span><span>GEOMETRY NODES</span>
+      <span>LIGHTING</span><span>CYCLES</span><span>EEVEE</span><span>COMPOSITING</span>
+      <span>MOTION GRAPHICS</span><span>SIMULATION</span>
+      <span>MODELING</span><span>SCULPTING</span><span>RIGGING</span><span>GEOMETRY NODES</span>
+      <span>LIGHTING</span><span>CYCLES</span><span>EEVEE</span><span>COMPOSITING</span>
+      <span>MOTION GRAPHICS</span><span>SIMULATION</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FEATURED COURSES ================= -->
+<section class="section" id="courses">
+  <div class="section-wrap">
+    <div class="section-head" data-aos="fade-up">
+      <p class="eyebrow"><span class="eyebrow-dot"></span> Curriculum</p>
+      <h2>Featured courses</h2>
+      <p class="section-desc">Six tracks. Every lesson ships with a working .blend file, notes, and a clear finish line.</p>
+    </div>
+
+    <div class="course-grid" id="courseGrid"></div>
+
+    <div class="section-cta" data-aos="fade-up">
+      <a href="courses.html" class="btn btn-outline">View full curriculum <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LATEST VIDEOS ================= -->
+<section class="section section-alt" id="videos">
+  <div class="section-wrap">
+    <div class="section-head" data-aos="fade-up">
+      <p class="eyebrow"><span class="eyebrow-dot"></span> Fresh renders</p>
+      <h2>Latest videos</h2>
+      <p class="section-desc">Breakdowns, speed-sculpts, and full tutorials, uploaded weekly.</p>
+    </div>
+
+    <div class="video-grid" id="videoGrid"></div>
+  </div>
+</section>
+
+<!-- ================= ROADMAP PREVIEW ================= -->
+<section class="section" id="roadmap-preview">
+  <div class="section-wrap">
+    <div class="section-head" data-aos="fade-up">
+      <p class="eyebrow"><span class="eyebrow-dot"></span> The path</p>
+      <h2>Beginner to professional</h2>
+      <p class="section-desc">One continuous track. No guessing what to learn next.</p>
+    </div>
+
+    <div class="roadmap-track" data-aos="fade-up" data-aos-delay="100">
+      <div class="roadmap-line"><span class="roadmap-line-fill" style="width:38%"></span></div>
+      <div class="roadmap-node is-done">
+        <span class="rn-dot"><i class="fa-solid fa-check"></i></span>
+        <span class="rn-label">Foundations</span>
+        <span class="rn-sub">Interface · Navigation · Modeling basics</span>
+      </div>
+      <div class="roadmap-node is-current">
+        <span class="rn-dot">2</span>
+        <span class="rn-label">Core Craft</span>
+        <span class="rn-sub">Sculpting · UVs · Texturing · Lighting</span>
+      </div>
+      <div class="roadmap-node">
+        <span class="rn-dot">3</span>
+        <span class="rn-label">Systems</span>
+        <span class="rn-sub">Rigging · Geometry Nodes · Simulation</span>
+      </div>
+      <div class="roadmap-node">
+        <span class="rn-dot">4</span>
+        <span class="rn-label">Studio Ready</span>
+        <span class="rn-sub">Compositing · Motion Graphics · Portfolio</span>
+      </div>
+    </div>
+
+    <div class="section-cta" data-aos="fade-up">
+      <a href="roadmap.html" class="btn btn-outline">See the full roadmap <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= STATS COUNTER ================= -->
+<section class="stats-band" id="stats">
+  <div class="section-wrap stats-grid">
+    <div class="stat-card" data-aos="fade-up">
+      <span class="stat-num" data-count="128000">0</span>
+      <span class="stat-label">Students taught</span>
+    </div>
+    <div class="stat-card" data-aos="fade-up" data-aos-delay="80">
+      <span class="stat-num" data-count="64">0</span>
+      <span class="stat-label">Courses &amp; challenges</span>
+    </div>
+    <div class="stat-card" data-aos="fade-up" data-aos-delay="160">
+      <span class="stat-num" data-count="920">0</span>
+      <span class="stat-label">Hours of content</span>
+    </div>
+    <div class="stat-card" data-aos="fade-up" data-aos-delay="240">
+      <span class="stat-num" data-count="42">0</span>
+      <span class="stat-label">Countries reached</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="section" id="testimonials">
+  <div class="section-wrap">
+    <div class="section-head" data-aos="fade-up">
+      <p class="eyebrow"><span class="eyebrow-dot"></span> Student outcomes</p>
+      <h2>What the class says</h2>
+    </div>
+
+    <div class="testi-carousel" data-aos="fade-up" data-aos-delay="100">
+      <button class="testi-arrow testi-prev" id="testiPrev" aria-label="Previous review"><i class="fa-solid fa-chevron-left"></i></button>
+      <div class="testi-track" id="testiTrack"></div>
+      <button class="testi-arrow testi-next" id="testiNext" aria-label="Next review"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="testi-dots" id="testiDots"></div>
+  </div>
+</section>
+
+<!-- ================= NEWSLETTER ================= -->
+<section class="newsletter-band" id="newsletter">
+  <div class="section-wrap newsletter-inner" data-aos="zoom-in">
+    <div>
+      <h2>Get the weekly render notes</h2>
+      <p>One email a week: new lessons, free assets, and the exact node setups from the latest projects.</p>
+    </div>
+    <form id="newsletterForm" class="newsletter-form" novalidate>
+      <div class="nf-field">
+        <i class="fa-solid fa-envelope"></i>
+        <input type="email" id="newsletterEmail" placeholder="you@studio.com" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Subscribe <i class="fa-solid fa-arrow-right"></i></button>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="section-wrap footer-grid">
+    <div class="footer-brand">
+      <a href="index.html" class="brand">
+        <span class="brand-mark">
+          <svg viewBox="0 0 100 100" width="28" height="28">
+            <polygon points="50,10 88,32 88,68 50,90 12,68 12,32" fill="none" stroke="#EF7D28" stroke-width="5"/>
+          </svg>
+        </span>
+        <span class="brand-text">Saif Motion<em>Studio</em></span>
+      </a>
+      <p>Project-based Blender education for artists who'd rather finish a render than watch another theory lecture.</p>
+      <div class="footer-social">
+        <a href="#" aria-label="Discord"><i class="fa-brands fa-discord"></i></a>
+        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="courses.html">Blender Course</a></li>
+        <li><a href="challenge.html">30-Day Challenge</a></li>
+        <li><a href="portfolio.html">Portfolio</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="roadmap.html">Roadmap</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="assets.html">Free Assets</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="downloads.html">Downloads</a></li>
+        <li><a href="community.html">Community</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Studio</h4>
+      <ul>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col footer-contact">
+      <h4>Business</h4>
+      <p><i class="fa-regular fa-envelope"></i> hello@saifmotionstudio.com</p>
+      <p><i class="fa-solid fa-location-dot"></i> Remote-first · Worldwide</p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© <span id="footerYear"></span> Saif Motion Studio. All rights reserved.</p>
+    <p>Built with Blender, coffee, and too many render passes.</p>
+  </div>
+</footer>
+
+<!-- ================= BACK TO TOP ================= -->
+<button class="fab-top" id="fabTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+<!-- ================= VIDEO MODAL ================= -->
+<div class="modal-backdrop" id="videoModal" aria-hidden="true">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-video-stage">
+      <div class="wire-scene wire-scene--modal"><div class="wire-shape wire-shape--modal"></div></div>
+      <span class="modal-video-tag">SHOWREEL_2026.mp4</span>
+    </div>
+    <div class="modal-video-info">
+      <h3>Saif Motion Studio — 2026 Showreel</h3>
+      <p>A minute of work made in the courses: sculpts, rigs, geometry-node systems and rendered shots from real student projects.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+/* =========================================================
+   SAIF MOTION STUDIO — data/courses.js
+   Static content data for the homepage. Later pages (courses.html,
+   challenge.html, assets.html) will extend this file.
+   ========================================================= */
+
+const FEATURED_COURSES = [
+  {
+    level: "Beginner",
+    category: "Foundations",
+    icon: "fa-cube",
+    title: "Blender Interface & Modeling Basics",
+    desc: "Navigation, modifiers and hard-surface modeling fundamentals, taught by building six small props.",
+    lessons: 24,
+    hours: 8,
+    progress: 65
+  },
+  {
+    level: "Intermediate",
+    category: "Sculpting",
+    icon: "fa-hand",
+    title: "Character Sculpting in Blender",
+    desc: "Dynatopo, multires and brush workflow — sculpt a stylised bust from a sphere to a finished head.",
+    lessons: 31,
+    hours: 12,
+    progress: 30
+  },
+  {
+    level: "Advanced",
+    category: "Geometry Nodes",
+    icon: "fa-diagram-project",
+    title: "Procedural Worlds with Geometry Nodes",
+    desc: "Build a scattering and city-generation system entirely with nodes — no manual placement.",
+    lessons: 28,
+    hours: 14,
+    progress: 0
+  },
+  {
+    level: "Intermediate",
+    category: "Rigging",
+    icon: "fa-bone",
+    title: "Rigging for Animators",
+    desc: "IK/FK arms, control curves and a clean deform rig, built for a walk-cycle-ready biped.",
+    lessons: 22,
+    hours: 10,
+    progress: 0
+  },
+  {
+    level: "Advanced",
+    category: "Lighting & Rendering",
+    icon: "fa-lightbulb",
+    title: "Cinematic Lighting: Cycles & EEVEE",
+    desc: "Three-point setups, HDRI blending and render-pass compositing for portfolio-grade stills.",
+    lessons: 19,
+    hours: 9,
+    progress: 0
+  },
+  {
+    level: "Advanced",
+    category: "Motion Graphics",
+    icon: "fa-film",
+    title: "Motion Graphics for Product Reveals",
+    desc: "Camera choreography, material animation and compositing for a 15-second product spot.",
+    lessons: 26,
+    hours: 11,
+    progress: 0
+  }
+];
+
+const LATEST_VIDEOS = [
+  { title: "Speed Sculpt: Stylised Fox in 20 Minutes", meta: "42K views · 12 min", duration: "12:04" },
+  { title: "Geometry Nodes Breakdown: Procedural Vines", meta: "31K views · 18 min", duration: "18:22" },
+  { title: "Lighting a Product Shot from Scratch", meta: "27K views · 15 min", duration: "15:47" },
+  { title: "Rigging a Simple Creature (Full Workflow)", meta: "19K views · 24 min", duration: "24:10" },
+  { title: "Compositing: Adding Depth with Render Passes", meta: "22K views · 11 min", duration: "11:36" },
+  { title: "30-Day Challenge — Week 1 Recap", meta: "38K views · 9 min", duration: "09:18" }
+];
+
+const TESTIMONIALS = [
+  { initials: "RA", name: "Riya Anand", role: "3D Generalist, Freelance", quote: "The geometry nodes course finally made procedural workflows click. I shipped my first client project two weeks after finishing it.", stars: 5 },
+  { initials: "MK", name: "Marcus Klein", role: "Motion Designer", quote: "Every lesson ends with a finished shot, not a half-built scene. That structure alone got me to actually complete a course for once.", stars: 5 },
+  { initials: "TS", name: "Tariq Siddiqui", role: "Indie Game Artist", quote: "The rigging track is the clearest explanation of IK/FK switching I've found anywhere, free or paid.", stars: 5 },
+  { initials: "JL", name: "Jing Lin", role: "Architecture Visualiser", quote: "Went from never opening Blender to rendering my own archviz walkthroughs in six weeks of the roadmap track.", stars: 4 },
+  { initials: "AO", name: "Ade Okafor", role: "Student, 30-Day Challenge", quote: "The daily structure of the challenge kept me accountable in a way tutorials on their own never did.", stars: 5 }
+];
+
+</script>
+<script>
+/* =========================================================
+   SAIF MOTION STUDIO — js/main.js
+   Vanilla JS behaviour for index.html
+   ========================================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- LOADING SCREEN ---------------- */
+  (function loadingScreen(){
+    const screen = document.getElementById('loadingScreen');
+    const bar = document.getElementById('loaderProgress');
+    const pct = document.getElementById('loaderPercent');
+    let p = 0;
+    const tick = setInterval(() => {
+      p += Math.random() * 18;
+      if (p >= 100) { p = 100; clearInterval(tick); }
+      bar.style.width = p + '%';
+      pct.textContent = Math.round(p) + '%';
+      if (p === 100) {
+        setTimeout(() => screen.classList.add('is-hidden'), 260);
+      }
+    }, 140);
+    // safety net in case load is instant
+    window.addEventListener('load', () => {
+      setTimeout(() => screen.classList.add('is-hidden'), 900);
+    });
+  })();
+
+  /* ---------------- CUSTOM CURSOR ---------------- */
+  if (!reduceMotion && matchMedia('(hover:hover)').matches) {
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let rx = 0, ry = 0, mx = 0, my = 0;
+    window.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    });
+    (function loop(){
+      rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a, button, .course-card, .video-card').forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('is-active'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('is-active'));
+    });
+  }
+
+  /* ---------------- SCROLL PROGRESS + HEADER ---------------- */
+  const scrollBar = document.getElementById('scrollProgressBar');
+  const header = document.getElementById('siteHeader');
+  const fabTop = document.getElementById('fabTop');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    scrollBar.style.width = scrolled + '%';
+    header.classList.toggle('is-scrolled', h.scrollTop > 20);
+    fabTop.classList.toggle('is-visible', h.scrollTop > 600);
+  }, { passive: true });
+  fabTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  /* ---------------- MOBILE NAV ---------------- */
+  const burger = document.getElementById('navBurger');
+  const mainNav = document.getElementById('mainNav');
+  burger.addEventListener('click', () => {
+    const open = mainNav.classList.toggle('is-open');
+    burger.setAttribute('aria-expanded', open);
+  });
+  mainNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mainNav.classList.remove('is-open');
+    burger.setAttribute('aria-expanded', false);
+  }));
+
+  /* ---------------- THEME TOGGLE ---------------- */
+  const themeToggle = document.getElementById('themeToggle');
+  const themeIcon = themeToggle.querySelector('i');
+  function applyTheme(theme){
+    document.documentElement.setAttribute('data-theme', theme);
+    themeIcon.className = theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    localStorage.setItem('sms-theme', theme);
+  }
+  applyTheme(localStorage.getItem('sms-theme') || 'dark');
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    applyTheme(current);
+  });
+
+  /* ---------------- SEARCH OVERLAY ---------------- */
+  const searchOverlay = document.getElementById('searchOverlay');
+  const searchInput = document.getElementById('globalSearchInput');
+  const searchSuggestions = document.getElementById('searchSuggestions');
+  const searchIndex = [
+    ...FEATURED_COURSES.map(c => ({ label: c.title, type: 'Course' })),
+    { label: '30 Days Blender Challenge', type: 'Challenge' },
+    { label: 'Free HDRIs & Textures', type: 'Assets' },
+    { label: 'Community Discord', type: 'Community' },
+    { label: 'Blender Roadmap', type: 'Roadmap' }
+  ];
+  function openSearch(){
+    searchOverlay.classList.add('is-open');
+    renderSuggestions('');
+    setTimeout(() => searchInput.focus(), 100);
+  }
+  function closeSearch(){ searchOverlay.classList.remove('is-open'); searchInput.value = ''; }
+  function renderSuggestions(query){
+    const q = query.trim().toLowerCase();
+    const results = searchIndex.filter(i => i.label.toLowerCase().includes(q)).slice(0, 6);
+    searchSuggestions.innerHTML = (results.length ? results : searchIndex.slice(0,5))
+      .map(r => `<li>${r.label} <b>· ${r.type}</b></li>`).join('');
+  }
+  document.getElementById('searchToggle').addEventListener('click', openSearch);
+  document.getElementById('searchClose').addEventListener('click', closeSearch);
+  searchInput.addEventListener('input', e => renderSuggestions(e.target.value));
+  searchOverlay.addEventListener('click', e => { if (e.target === searchOverlay) closeSearch(); });
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+    if (e.key === 'Escape') { closeSearch(); closeModal(); }
+  });
+
+  /* ---------------- HERO TYPING ROTATOR ---------------- */
+  (function rotator(){
+    const el = document.getElementById('rotatorText');
+    const words = ['worlds', 'characters', 'products', 'stories', 'scenes'];
+    if (reduceMotion) { el.textContent = words[0]; return; }
+    let wIndex = 0, cIndex = 0, deleting = false;
+    function tick(){
+      const word = words[wIndex];
+      cIndex += deleting ? -1 : 1;
+      el.textContent = word.slice(0, cIndex);
+      let delay = deleting ? 55 : 95;
+      if (!deleting && cIndex === word.length) { delay = 1400; deleting = true; }
+      else if (deleting && cIndex === 0) { deleting = false; wIndex = (wIndex + 1) % words.length; delay = 300; }
+      setTimeout(tick, delay);
+    }
+    tick();
+  })();
+
+  /* ---------------- NODE GRAPH CANVAS (hero background) ---------------- */
+  (function nodeCanvas(){
+    const canvas = document.getElementById('nodeCanvas');
+    const hero = document.getElementById('hero');
+    const ctx = canvas.getContext('2d');
+    let w, h, nodes;
+
+    function resize(){
+      w = canvas.width = hero.offsetWidth;
+      h = canvas.height = hero.offsetHeight;
+      const count = Math.max(18, Math.floor((w * h) / 55000));
+      nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25
+      }));
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function draw(){
+      ctx.clearRect(0, 0, w, h);
+      for (const n of nodes) {
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > w) n.vx *= -1;
+        if (n.y < 0 || n.y > h) n.vy *= -1;
+      }
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150) {
+            ctx.strokeStyle = `rgba(239,125,40,${0.14 * (1 - dist / 150)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      for (const n of nodes) {
+        ctx.fillStyle = 'rgba(61,157,242,0.55)';
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (!reduceMotion) requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  /* ---------------- COUNTERS ---------------- */
+  (function counters(){
+    const nums = document.querySelectorAll('[data-count]');
+    const animate = (el) => {
+      const target = parseFloat(el.dataset.count);
+      const decimals = el.dataset.decimal ? parseInt(el.dataset.decimal) : 0;
+      const duration = 1600;
+      const start = performance.now();
+      function step(now){
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const val = target * eased;
+        el.textContent = decimals ? val.toFixed(decimals) : Math.floor(val).toLocaleString();
+        if (progress < 1) requestAnimationFrame(step);
+        else el.textContent = decimals ? target.toFixed(decimals) : target.toLocaleString();
+      }
+      requestAnimationFrame(step);
+    };
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { animate(entry.target); observer.unobserve(entry.target); }
+      });
+    }, { threshold: 0.4 });
+    nums.forEach(n => observer.observe(n));
+  })();
+
+  /* ---------------- RENDER: COURSE CARDS ---------------- */
+  (function renderCourses(){
+    const grid = document.getElementById('courseGrid');
+    grid.innerHTML = FEATURED_COURSES.map((c, i) => `
+      <article class="course-card" data-aos="fade-up" data-aos-delay="${(i % 3) * 80}">
+        <div class="course-thumb"><span class="course-level">${c.level}</span><i class="fa-solid ${c.icon}"></i></div>
+        <div class="course-body">
+          <span class="course-cat">${c.category}</span>
+          <h3>${c.title}</h3>
+          <p>${c.desc}</p>
+          <div class="course-meta"><span><i class="fa-regular fa-file-lines"></i> ${c.lessons} lessons</span><span><i class="fa-regular fa-clock"></i> ${c.hours}h</span></div>
+          <div class="course-progress-row">
+            <div class="course-progress-track"><div class="course-progress-fill" style="width:${c.progress}%"></div></div>
+            <span class="course-progress-pct">${c.progress}%</span>
+          </div>
+          <div class="course-actions">
+            <button class="btn btn-primary btn-watch"><i class="fa-solid fa-play"></i> Watch</button>
+            <button class="icon-btn btn-download" aria-label="Download notes" title="Download notes"><i class="fa-solid fa-download"></i></button>
+            <button class="icon-btn btn-complete" aria-label="Mark completed" title="Mark completed"><i class="fa-regular fa-circle-check"></i></button>
+          </div>
+        </div>
+      </article>
+    `).join('');
+
+    grid.addEventListener('click', e => {
+      const card = e.target.closest('.course-card');
+      if (!card) return;
+      const title = card.querySelector('h3').textContent;
+      if (e.target.closest('.btn-watch')) showToast(`Loading “${title}” — first lesson starting…`, 'fa-play');
+      if (e.target.closest('.btn-download')) showToast(`Notes for “${title}” downloaded.`, 'fa-download');
+      if (e.target.closest('.btn-complete')) {
+        const icon = e.target.closest('.btn-complete').querySelector('i');
+        const done = icon.classList.toggle('fa-solid');
+        icon.classList.toggle('fa-regular', !done);
+        icon.classList.toggle('fa-circle-check', true);
+        showToast(done ? `Marked “${title}” as completed.` : `“${title}” marked incomplete.`, 'fa-circle-check');
+      }
+    });
+  })();
+
+  /* ---------------- RENDER: VIDEO GRID ---------------- */
+  (function renderVideos(){
+    const grid = document.getElementById('videoGrid');
+    grid.innerHTML = LATEST_VIDEOS.map((v, i) => `
+      <article class="video-card" data-aos="fade-up" data-aos-delay="${(i % 3) * 80}" data-title="${v.title}">
+        <div class="video-thumb">
+          <div class="wire-scene"><div class="wire-shape"></div></div>
+          <span class="video-play"><i class="fa-solid fa-play"></i></span>
+          <span class="video-duration">${v.duration}</span>
+        </div>
+        <div class="video-info"><h3>${v.title}</h3><p class="video-info-meta">${v.meta}</p></div>
+      </article>
+    `).join('');
+    grid.addEventListener('click', e => {
+      const card = e.target.closest('.video-card');
+      if (card) openModal(card.dataset.title);
+    });
+  })();
+
+  /* ---------------- TESTIMONIAL CAROUSEL ---------------- */
+  (function testimonials(){
+    const track = document.getElementById('testiTrack');
+    const dotsWrap = document.getElementById('testiDots');
+    const row = document.createElement('div');
+    row.className = 'testi-slide-row';
+    row.innerHTML = TESTIMONIALS.map(t => `
+      <div class="testi-card">
+        <div class="testi-avatar">${t.initials}</div>
+        <div>
+          <div class="testi-stars">${'<i class="fa-solid fa-star"></i>'.repeat(t.stars)}${'<i class="fa-regular fa-star"></i>'.repeat(5 - t.stars)}</div>
+          <p class="testi-quote">“${t.quote}”</p>
+          <div class="testi-name">${t.name}</div>
+          <div class="testi-role">${t.role}</div>
+        </div>
+      </div>
+    `).join('');
+    track.appendChild(row);
+    dotsWrap.innerHTML = TESTIMONIALS.map((_, i) => `<span data-i="${i}"></span>`).join('');
+    const dots = dotsWrap.querySelectorAll('span');
+    let current = 0;
+    function goTo(i){
+      current = (i + TESTIMONIALS.length) % TESTIMONIALS.length;
+      row.style.transform = `translateX(-${current * 100}%)`;
+      dots.forEach((d, idx) => d.classList.toggle('is-active', idx === current));
+    }
+    document.getElementById('testiPrev').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('testiNext').addEventListener('click', () => goTo(current + 1));
+    dots.forEach(d => d.addEventListener('click', () => goTo(parseInt(d.dataset.i))));
+    goTo(0);
+    if (!reduceMotion) setInterval(() => goTo(current + 1), 6000);
+  })();
+
+  /* ---------------- MODAL (video preview) ---------------- */
+  const modal = document.getElementById('videoModal');
+  window.openModal = function(title){
+    if (title) modal.querySelector('.modal-video-info h3').textContent = title;
+    modal.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeModal = function(){
+    modal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  };
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.getElementById('watchShowreelBtn').addEventListener('click', () => openModal('Saif Motion Studio — 2026 Showreel'));
+
+  /* ---------------- NEWSLETTER FORM ---------------- */
+  document.getElementById('newsletterForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = document.getElementById('newsletterEmail');
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+    if (!valid) { showToast('Enter a valid email address.', 'fa-triangle-exclamation'); return; }
+    showToast('Subscribed — check your inbox for a welcome note.', 'fa-check');
+    input.value = '';
+  });
+
+  /* ---------------- TOASTS ---------------- */
+  window.showToast = function(message, icon){
+    const stack = document.getElementById('toastStack');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = `<i class="fa-solid ${icon || 'fa-circle-info'}"></i><span>${message}</span>`;
+    stack.appendChild(el);
+    setTimeout(() => {
+      el.classList.add('is-leaving');
+      setTimeout(() => el.remove(), 300);
+    }, 3400);
+  };
+
+  /* ---------------- FOOTER YEAR ---------------- */
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+  /* ---------------- AOS + GSAP ---------------- */
+  if (window.AOS) AOS.init({ once: true, duration: 700, easing: 'ease-out-cubic' });
+  if (window.gsap && !reduceMotion) {
+    gsap.from('.hero-copy > *', { opacity: 0, y: 24, duration: 0.9, stagger: 0.12, ease: 'power3.out', delay: 0.2 });
+  }
+});
+
+</script>
+</body>
+</html>
